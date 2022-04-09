@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler
     public ResponseEntity<?> anyException(Exception e){
-        log.error("Exception, {}", e.getMessage() + "\n" + e.getStackTrace()[0]);
+        log.error("Exception, {}", e.getMessage() + "\n" + e.getStackTrace());
         return new ResponseEntity<>(e.getMessage() + "\n" + e.getStackTrace()[0],
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }

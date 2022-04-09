@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @Slf4j
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
     private final JwtRequestFilter jwtRequestFilter;
 
     @Override

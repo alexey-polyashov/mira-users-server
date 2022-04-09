@@ -13,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
@@ -93,43 +94,51 @@ public class UserService {
     public Set<RoleDto> getUserRoles(Long userId) {
         UserModel user = findById(userId);
         return user.getRoles().stream()
-                .map((p)->modelMapper.map(p, RoleDto.class))
+                .map(p->modelMapper.map(p, RoleDto.class))
                 .collect(Collectors.toSet());
     }
 
-    public Set<RoleDto> setUserRoles(Long userId, List<RoleDto> roles) {
+    public Set<RoleDto> setUserRoles(Long userId, List<String> roles) {
         UserModel user = findById(userId);
         user.getRoles().clear();
-        List<RoleModel> roleList = roleRepository.findByNameIn(roles);
+        List<RoleModel> roleList = roleRepository.findByNameIn(roles.toArray(new String[0]));
         user.getRoles().addAll(roleList);
         userRepository.save(user);
         return user.getRoles().stream()
-                .map((p)->modelMapper.map(p, RoleDto.class))
+                .map(p->modelMapper.map(p, RoleDto.class))
                 .collect(Collectors.toSet());
     }
 
     public Set<RoleDto> deleteUserRole(Long userId, String roleName) {
         UserModel user = findById(userId);
         user.setRoles(user.getRoles().stream()
-                .filter((p)->roleName!=p.getName())
+                .filter(p->!roleName.equals(p.getName()))
                 .collect(Collectors.toSet()));
         userRepository.save(user);
         return user.getRoles().stream()
-                .map((p)->modelMapper.map(p, RoleDto.class))
+                .map(p->modelMapper.map(p, RoleDto.class))
                 .collect(Collectors.toSet());
     }
 
-    public Set<RoleDto> addUserRole(Long userId, String roleName) {
+    public Set<RoleDto> addUserRoles(Long userId, List<String> roles) {
         UserModel user = findById(userId);
-        RoleModel roleList = roleRepository.findByName(roleName)
-                .orElseThrow(()->new NotFoundException(String.format("Role with name '%s' not found", roleName)));
-        user.setRoles(user.getRoles().stream()
-                .filter((p)->roleName!=p.getName())
-                .collect(Collectors.toSet()));
+        List<RoleModel> roleList = roleRepository.findByNameIn(roles.toArray(new String[0]));
+        Set<RoleModel> currentRoles = user.getRoles();
+        roleList.stream()
+                        .forEach(p->{
+                            if(!currentRoles.contains(p)){
+                                currentRoles.add(p);
+                            }
+                        });
         userRepository.save(user);
         return user.getRoles().stream()
-                .map((p)->modelMapper.map(p, RoleDto.class))
+                .map(p->modelMapper.map(p, RoleDto.class))
                 .collect(Collectors.toSet());
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        UserModel user = findByLogin(userName);
+        return new User(user.getLogin(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
+    }
 }

@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import mira.users.ms.dto.*;
 import mira.users.ms.services.UserService;
 import org.modelmapper.ModelMapper;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,7 +28,7 @@ public class UsersController {
         log.info("UsersController, invoke method: getUsers");
         return userService.findAll()
                 .stream()
-                .map((p)->modelMapper.map(p, UserDto.class))
+                .map(p->modelMapper.map(p, UserDto.class))
                 .collect(Collectors.toList());
     }
 
@@ -70,15 +69,15 @@ public class UsersController {
     }
 
     @PutMapping("/{userId}/roles")
-    public Set<RoleDto> saveRoles(@PathVariable Long userId, @RequestBody List<RoleDto> roles){
+    public Set<RoleDto> saveRoles(@PathVariable Long userId, @RequestBody List<String> roles){
         log.info("UsersController, invoke method: saveRoles {}", userId);
         return userService.setUserRoles(userId, roles);
     }
 
-    @PostMapping("/{userId}/roles/{roleName}")
-    public Set<RoleDto> addRole(@PathVariable Long userId, @PathVariable String roleName){
+    @PutMapping("/{userId}/roles/add/")
+    public Set<RoleDto> addRoles(@PathVariable Long userId, @RequestBody List<String> roles){
         log.info("UsersController, invoke method: addRole {}", userId);
-        return userService.addUserRole(userId, roleName);
+        return userService.addUserRoles(userId, roles);
     }
 
     @DeleteMapping("/{userId}/roles/{roleName}")

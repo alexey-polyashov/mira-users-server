@@ -28,8 +28,7 @@ CREATE TABLE users_roles
 
 insert into users (login, password, email, name)
 values ('user', '$2a$04$Fx/SX9.BAvtPlMyIIqqFx.hLY2Xp8nnhpzvEEVINvVpwIPbA3v/.i', 'bob_johnson@gmail.com', 'Lorem'),
-       ('admin', '$2a$04$Fx/SX9.BAvtPlMyIIqqFx.hLY2Xp8nnhpzvEEVINvVpwIPbA3v/.i', 'john_johnson@gmail.com', 'Ipsum'),
-       ('user2', '$2a$04$Fx/SX9.BAvtPlMyIIqqFx.hLY2Xp8nnhpzvEEVINvVpwIPbA3v/.i', 'nick_davidson@gmail.com', 'Ivan');
+       ('admin', '$2a$04$Fx/SX9.BAvtPlMyIIqqFx.hLY2Xp8nnhpzvEEVINvVpwIPbA3v/.i', 'john_johnson@gmail.com', 'Ipsum');
 
 insert into roles (name)
 values ('ROLE_USER'),
@@ -38,5 +37,4 @@ values ('ROLE_USER'),
 
 insert into users_roles (user_id, role_id)
 values (1, 1),
-       (2, 2),
-       (3, 1);
+       (2, 2);

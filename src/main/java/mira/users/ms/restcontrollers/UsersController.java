@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import mira.users.ms.dto.*;
 import mira.users.ms.services.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,6 +24,7 @@ public class UsersController {
     private final UserService userService;
     private final ModelMapper modelMapper;
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping
     public List<UserDto> getUsers(){
         log.info("UsersController, invoke method: getUsers");
@@ -38,6 +40,7 @@ public class UsersController {
         return modelMapper.map(userService.findById(userId), UserDto.class);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public Long newUser(@Valid @RequestBody NewUserDto userDto){
         log.info("UsersController, invoke method: newUser");
@@ -56,30 +59,35 @@ public class UsersController {
         return userService.setPassword(userId, passwordDto);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{userId}")
     public void delUser(@PathVariable Long userId){
         log.info("UsersController, invoke method: delUser {}", userId);
         userService.deleteUser(userId);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/{userId}/roles")
     public Set<RoleDto> getUserRoles(@PathVariable Long userId){
         log.info("UsersController, invoke method: getUserRoles {}", userId);
         return userService.getUserRoles(userId);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{userId}/roles")
     public Set<RoleDto> saveRoles(@PathVariable Long userId, @RequestBody List<String> roles){
         log.info("UsersController, invoke method: saveRoles {}", userId);
         return userService.setUserRoles(userId, roles);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{userId}/roles/add/")
     public Set<RoleDto> addRoles(@PathVariable Long userId, @RequestBody List<String> roles){
         log.info("UsersController, invoke method: addRole {}", userId);
         return userService.addUserRoles(userId, roles);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{userId}/roles/{roleName}")
     public Set<RoleDto> deleteUserRoles(@PathVariable Long userId, @PathVariable String roleName){
         log.info("UsersController, invoke method: deleteUserRoles {}", userId);

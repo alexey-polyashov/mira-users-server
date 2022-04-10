@@ -43,6 +43,8 @@ public class UserService implements UserDetailsService {
 
     public Long newUser(NewUserDto userDto) {
         UserModel user = modelMapper.map(userDto, UserModel.class);
+        user.setPassword(
+                passwordEncoder.encode(userDto.getPassword()));
         userRepository.save(user);
         return user.getId();
     }
@@ -65,7 +67,8 @@ public class UserService implements UserDetailsService {
         if(!passwordEncoder.matches(passwordDto.getOldPassword(), user.getPassword())){
             throw new BadRequestException("Old password incorrect");
         }
-        user.setPassword(passwordDto.getNewPassword());
+        user.setPassword(
+                passwordEncoder.encode(passwordDto.getNewPassword()));
         userRepository.save(user);
         return user.getId();
     }

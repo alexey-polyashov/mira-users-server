@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+import java.util.List;
+
 @AllArgsConstructor
+@Data
 @NoArgsConstructor
-public class JwtResponseDTO {
-    private String token;
+public class CredentialsDto {
+    List<String> grants;
 }

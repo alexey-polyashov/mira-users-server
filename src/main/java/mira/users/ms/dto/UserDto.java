@@ -13,7 +13,6 @@ import java.util.Collection;
 public class UserDto {
 
     private String login = "";
-    private String password = "";
     private String email = "";
     private Long id;
 

@@ -3,6 +3,7 @@ package mira.users.ms.exceptions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<?> catchInvalidInputDataException(MethodArgumentNotValidException e) {
+    public ResponseEntity<List<Violation>> catchInvalidInputDataException(MethodArgumentNotValidException e) {
         List<Violation> violations = e.getBindingResult().getFieldErrors().stream()
                 .map(error -> new Violation(error.getField(), error.getDefaultMessage()))
                 .collect(Collectors.toList());
@@ -24,7 +25,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<?> catchInvalidInputDataException(ConstraintViolationException e) {
+    public ResponseEntity<List<Violation>> catchInvalidInputDataException(ConstraintViolationException e) {
         List<Violation> violations = e.getConstraintViolations().stream()
                 .map(error -> new Violation(error.getPropertyPath().toString(), error.getMessage()))
                 .collect(Collectors.toList());
@@ -32,22 +33,29 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<?> notFoundException(NotFoundException notFoundException){
+    public ResponseEntity<String> notFoundException(NotFoundException notFoundException){
         log.error("Resource not found: {}", notFoundException.getMessage());
         return new ResponseEntity<>(notFoundException.getMessage(),
                 HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler
-    public ResponseEntity<?> badRequestException(BadRequestException e){
+    public ResponseEntity<String> badRequestException(BadRequestException e){
         log.error("Bad request, {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(),
                 HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler
-    public ResponseEntity<?> anyException(Exception e){
+    public ResponseEntity<String> anyException(Exception e){
         log.error("Exception, {}", e.getMessage() + "\n" + e.getStackTrace());
         return new ResponseEntity<>(e.getMessage() + "\n" + e.getStackTrace()[0],
                 HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> anyException(AccessDeniedException e){
+        log.error("Exception, {}", e.getMessage());
+        return new ResponseEntity<>(e.getMessage(),
+                HttpStatus.FORBIDDEN);
     }
 
 }

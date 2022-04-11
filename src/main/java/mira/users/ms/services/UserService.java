@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -101,11 +102,12 @@ public class UserService implements UserDetailsService {
                 .collect(Collectors.toSet());
     }
 
-    public Set<RoleDto> setUserRoles(Long userId, List<String> roles) {
+    @Transactional
+    public Set<RoleDto> setUserRoles(Long userId, Set<String> roles) {
         UserModel user = findById(userId);
         user.getRoles().clear();
-        List<RoleModel> roleList = roleRepository.findByNameIn(roles.toArray(new String[0]));
-        user.getRoles().addAll(roleList);
+        Set<RoleModel> roleList = roleRepository.findByNameIn(roles.toArray(new String[0]));
+        user.setRoles(roleList);
         userRepository.save(user);
         return user.getRoles().stream()
                 .map(p->modelMapper.map(p, RoleDto.class))
@@ -123,16 +125,11 @@ public class UserService implements UserDetailsService {
                 .collect(Collectors.toSet());
     }
 
-    public Set<RoleDto> addUserRoles(Long userId, List<String> roles) {
+    public Set<RoleDto> addUserRoles(Long userId, Set<String> roles) {
         UserModel user = findById(userId);
-        List<RoleModel> roleList = roleRepository.findByNameIn(roles.toArray(new String[0]));
+        Set<RoleModel> roleList = roleRepository.findByNameIn(roles.toArray(new String[0]));
         Set<RoleModel> currentRoles = user.getRoles();
-        roleList.stream()
-                        .forEach(p->{
-                            if(!currentRoles.contains(p)){
-                                currentRoles.add(p);
-                            }
-                        });
+        currentRoles.addAll(roleList);
         userRepository.save(user);
         return user.getRoles().stream()
                 .map(p->modelMapper.map(p, RoleDto.class))

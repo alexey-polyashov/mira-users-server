@@ -1,6 +1,7 @@
 package mira.users.ms;
 
 import mira.users.ms.dto.NewUserDto;
+import mira.users.ms.dto.RoleDto;
 import mira.users.ms.dto.SetPasswordDto;
 import mira.users.ms.dto.UserUpdateDto;
 import mira.users.ms.entity.UserModel;
@@ -13,11 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @SpringBootTest
 @ActiveProfiles("dev")
@@ -162,5 +165,136 @@ public class UserServiceTest {
         Assertions.assertTrue(passwordEncoder.matches(setPasswordDto.getNewPassword(), newUser.getPassword()));
 
     }
+
+    @Test
+    public void findByLoginTest(){
+
+        NewUserDto newUserDto = new NewUserDto();
+        newUserDto.setEmail("findByLogin@test.test");
+        newUserDto.setPassword("password");
+        newUserDto.setLogin("findByLogin");
+        Long userId = userService.newUser(newUserDto);
+
+        Assertions.assertDoesNotThrow(()-> userService.findByLogin("findByLogin"));
+        UserModel user = userService.findByLogin("findByLogin");
+        Assertions.assertEquals("findByLogin", user.getLogin());
+
+        userService.deleteUser(userId);
+        Assertions.assertThrows(NotFoundException.class,()->userService.findByLogin("findByLogin"));
+
+    }
+
+    @Test
+    public void findByEmailTest(){
+
+        NewUserDto newUserDto = new NewUserDto();
+        newUserDto.setEmail("findByEmail@test.test");
+        newUserDto.setPassword("password");
+        newUserDto.setLogin("findByEmail");
+        Long userId = userService.newUser(newUserDto);
+
+        Assertions.assertDoesNotThrow(()-> userService.findByLogin("findByEmail"));
+        UserModel user = userService.findByLogin("findByEmail");
+        Assertions.assertEquals("findByEmail", user.getLogin());
+
+        userService.deleteUser(userId);
+        Assertions.assertThrows(NotFoundException.class,()->userService.findByLogin("findByEmail"));
+
+    }
+
+    @Test
+    public void getUserDetailTest(){
+
+        NewUserDto newUserDto = new NewUserDto();
+        newUserDto.setEmail("getUserDetail@test.test");
+        newUserDto.setPassword("password");
+        newUserDto.setLogin("getUserDetail");
+        Long userId = userService.newUser(newUserDto);
+
+        Assertions.assertDoesNotThrow(()-> userService.getUserDetail("getUserDetail"));
+        UserDetails user = userService.getUserDetail("getUserDetail");
+        Assertions.assertEquals("findByEmail", user.getUsername());
+
+        userService.deleteUser(userId);
+        Assertions.assertThrows(NotFoundException.class,()->userService.getUserDetail("getUserDetail"));
+
+    }
+
+
+    @Test
+    public void getAndSetUserRolesTest(){
+
+        NewUserDto newUserDto = new NewUserDto();
+        newUserDto.setEmail("getUserRoles@test.test");
+        newUserDto.setPassword("password");
+        newUserDto.setLogin("getUserRoles");
+        Long userId = userService.newUser(newUserDto);
+        Set<String> roles = new HashSet<>(Arrays.asList("ROLE_ADMIN", "ROLE_USER"));
+        userService.setUserRoles(userId, roles);
+
+        Set<String> roleSet = userService.getUserRoles(userId).stream()
+                .map(RoleDto::getName)
+                .collect(Collectors.toSet());
+        Assertions.assertIterableEquals(roles, roleSet);
+
+        Set<String> rolesBad = new HashSet<>(Arrays.asList("ROLE_ADMIN", "ROLE_USER", "ROLE_R1"));
+        userService.setUserRoles(userId, roles);
+
+        rolesBad.remove("ROLE_R1");
+
+        roleSet = userService.getUserRoles(userId).stream()
+                .map(RoleDto::getName)
+                .collect(Collectors.toSet());
+        Assertions.assertIterableEquals(rolesBad, roleSet);
+
+
+    }
+
+    @Test
+    public void deleteAndAdUserRole(){
+
+        NewUserDto newUserDto = new NewUserDto();
+        newUserDto.setEmail("deleteAndAdUser@test.test");
+        newUserDto.setPassword("password");
+        newUserDto.setLogin("deleteAndAdUser");
+        Long userId = userService.newUser(newUserDto);
+        Set<String> roles = new HashSet<>();
+        roles.add("ROLE_ADMIN");
+        userService.addUserRoles(userId, roles);
+
+        Set<String> roleSet = userService.getUserRoles(userId).stream()
+                .map(RoleDto::getName)
+                .collect(Collectors.toSet());
+        Assertions.assertIterableEquals(roles, roleSet);
+
+        roles.add("ROLE_USER");
+        userService.addUserRoles(userId, roles);
+
+        roleSet = userService.getUserRoles(userId).stream()
+                .map(RoleDto::getName)
+                .collect(Collectors.toSet());
+        Assertions.assertIterableEquals(roles, roleSet);
+
+        Set<String> rolesBad = new HashSet<>(Arrays.asList("ROLE_ADMIN", "ROLE_USER", "ROLE_R1"));
+        userService.setUserRoles(userId, roles);
+
+        userService.deleteUserRole(userId, "ROLE_ADMIN");
+        roles.remove("ROLE_ADMIN");
+
+        roleSet = userService.getUserRoles(userId).stream()
+                .map(RoleDto::getName)
+                .collect(Collectors.toSet());
+        Assertions.assertIterableEquals(roles, roleSet);
+
+        userService.deleteUserRole(userId, "ROLE_ADMIN");
+
+        roleSet = userService.getUserRoles(userId).stream()
+                .map(RoleDto::getName)
+                .collect(Collectors.toSet());
+        Assertions.assertIterableEquals(roles, roleSet);
+
+    }
+
+
 
 }

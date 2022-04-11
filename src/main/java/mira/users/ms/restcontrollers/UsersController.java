@@ -75,14 +75,14 @@ public class UsersController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{userId}/roles")
-    public Set<RoleDto> saveRoles(@PathVariable Long userId, @RequestBody List<String> roles){
+    public Set<RoleDto> saveRoles(@PathVariable Long userId, @RequestBody Set<String> roles){
         log.info("UsersController, invoke method: saveRoles {}", userId);
         return userService.setUserRoles(userId, roles);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{userId}/roles/add/")
-    public Set<RoleDto> addRoles(@PathVariable Long userId, @RequestBody List<String> roles){
+    public Set<RoleDto> addRoles(@PathVariable Long userId, @RequestBody Set<String> roles){
         log.info("UsersController, invoke method: addRole {}", userId);
         return userService.addUserRoles(userId, roles);
     }

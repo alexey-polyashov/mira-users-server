@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -36,7 +36,7 @@ public class UserServiceTest {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Test
-    public void newUserTest(){
+    private void newUserTest(){
 
         List<UserModel> users1 = userService.findAll();
 
@@ -61,7 +61,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void findAllTest(){
+    private void findAllTest(){
 
         List<UserModel> users1 = userService.findAll();
         Assertions.assertTrue(users1.size()>=2);
@@ -78,7 +78,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void findById(){
+    private void findById(){
 
         List<UserModel> users = userService.findAll();
         Long id = users.get(0).getId();
@@ -92,7 +92,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void saveUserTest(){
+    private void saveUserTest(){
 
 
         NewUserDto newUserDto = new NewUserDto();
@@ -127,7 +127,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void deleteUserTest(){
+    private void deleteUserTest(){
 
         List<UserModel> users1 = userService.findAll();
         Long id = users1.get(1).getId();
@@ -142,12 +142,12 @@ public class UserServiceTest {
     }
 
     @Test
-    public void setPasswordTest(){
+    private void setPasswordTest(){
 
         NewUserDto newUserDto = new NewUserDto();
-        newUserDto.setEmail("ee@ee.ee");
+        newUserDto.setEmail("setPassword@ee.ee");
         newUserDto.setPassword("password");
-        newUserDto.setLogin("login");
+        newUserDto.setLogin("setPassword");
 
         SetPasswordDto setPasswordDto = new SetPasswordDto();
         setPasswordDto.setNewPassword("password2");
@@ -167,7 +167,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void findByLoginTest(){
+    private void findByLoginTest(){
 
         NewUserDto newUserDto = new NewUserDto();
         newUserDto.setEmail("findByLogin@test.test");
@@ -180,12 +180,12 @@ public class UserServiceTest {
         Assertions.assertEquals("findByLogin", user.getLogin());
 
         userService.deleteUser(userId);
-        Assertions.assertThrows(NotFoundException.class,()->userService.findByLogin("findByLogin"));
+        Assertions.assertThrows(UsernameNotFoundException.class,()->userService.findByLogin("findByLogin"));
 
     }
 
     @Test
-    public void findByEmailTest(){
+    private void findByEmailTest(){
 
         NewUserDto newUserDto = new NewUserDto();
         newUserDto.setEmail("findByEmail@test.test");
@@ -193,17 +193,17 @@ public class UserServiceTest {
         newUserDto.setLogin("findByEmail");
         Long userId = userService.newUser(newUserDto);
 
-        Assertions.assertDoesNotThrow(()-> userService.findByLogin("findByEmail"));
-        UserModel user = userService.findByLogin("findByEmail");
-        Assertions.assertEquals("findByEmail", user.getLogin());
+        Assertions.assertDoesNotThrow(()-> userService.findByEmail("findByEmail@test.test"));
+        UserModel user = userService.findByEmail("findByEmail@test.test");
+        Assertions.assertEquals("findByEmail@test.test", user.getEmail());
 
         userService.deleteUser(userId);
-        Assertions.assertThrows(NotFoundException.class,()->userService.findByLogin("findByEmail"));
+        Assertions.assertThrows(NotFoundException.class,()->userService.findByEmail("findByEmail@test.test"));
 
     }
 
     @Test
-    public void getUserDetailTest(){
+    private void getUserDetailTest(){
 
         NewUserDto newUserDto = new NewUserDto();
         newUserDto.setEmail("getUserDetail@test.test");
@@ -213,16 +213,16 @@ public class UserServiceTest {
 
         Assertions.assertDoesNotThrow(()-> userService.getUserDetail("getUserDetail"));
         UserDetails user = userService.getUserDetail("getUserDetail");
-        Assertions.assertEquals("findByEmail", user.getUsername());
+        Assertions.assertEquals("getUserDetail", user.getUsername());
 
         userService.deleteUser(userId);
-        Assertions.assertThrows(NotFoundException.class,()->userService.getUserDetail("getUserDetail"));
+        Assertions.assertThrows(UsernameNotFoundException.class,()->userService.getUserDetail("getUserDetail"));
 
     }
 
 
     @Test
-    public void getAndSetUserRolesTest(){
+    private void getAndSetUserRolesTest(){
 
         NewUserDto newUserDto = new NewUserDto();
         newUserDto.setEmail("getUserRoles@test.test");
@@ -251,7 +251,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void deleteAndAdUserRole(){
+    private void deleteAndAdUserRole(){
 
         NewUserDto newUserDto = new NewUserDto();
         newUserDto.setEmail("deleteAndAdUser@test.test");

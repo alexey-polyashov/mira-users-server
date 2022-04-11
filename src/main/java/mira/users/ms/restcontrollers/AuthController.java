@@ -1,6 +1,7 @@
 package mira.users.ms.restcontrollers;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,6 +64,8 @@ public class AuthController {
             username = jwtTokenUtil.getUsernameFromToken(jwt);
         } catch (ExpiredJwtException e) {
             return new ResponseEntity<>(new CredentialsDto(credentials), HttpStatus.UNAUTHORIZED);
+        } catch (MalformedJwtException e) {
+            return new ResponseEntity<>(new CredentialsDto(credentials), HttpStatus.BAD_REQUEST);
         }
 
         if (username != null) {

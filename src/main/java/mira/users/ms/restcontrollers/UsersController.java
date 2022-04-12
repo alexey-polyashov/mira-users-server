@@ -34,10 +34,10 @@ public class UsersController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/{userId}")
-    public UserDto getUser(@PathVariable Long userId){
-        log.info("UsersController, invoke method: getUser {}", userId);
-        return modelMapper.map(userService.findById(userId), UserDto.class);
+    @GetMapping("/{userLogin}")
+    public UserDto getUser(@PathVariable String userLogin){
+        log.info("UsersController, invoke method: getUser {}", userLogin);
+        return modelMapper.map(userService.findByLogin(userLogin), UserDto.class);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -81,7 +81,7 @@ public class UsersController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping("/{userId}/roles/add/")
+    @PutMapping("/{userId}/roles/add")
     public Set<RoleDto> addRoles(@PathVariable Long userId, @RequestBody Set<String> roles){
         log.info("UsersController, invoke method: addRole {}", userId);
         return userService.addUserRoles(userId, roles);

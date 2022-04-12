@@ -1,6 +1,6 @@
 package mira.users.ms.services;
 
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import mira.users.ms.dto.*;
 import mira.users.ms.entity.RoleModel;
 import mira.users.ms.entity.UserModel;
@@ -9,6 +9,7 @@ import mira.users.ms.exceptions.NotFoundException;
 import mira.users.ms.repositories.RoleRepository;
 import mira.users.ms.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -25,13 +26,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class UserService implements UserDetailsService {
 
-    private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
-    private final BCryptPasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository;
+    @Autowired
+    private  UserRepository userRepository;
+    @Autowired
+    private  ModelMapper modelMapper;
+    @Autowired
+    private  BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private  RoleRepository roleRepository;
 
     public List<UserModel> findAll() {
         return userRepository.findAll();

@@ -19,13 +19,13 @@ public class UserRepositoryTest {
     private UserRepository userRepository;
 
     @Test
-    private void findAllTest(){
+    public void findAllTest(){
         List<UserModel> users = userRepository.findAll();
         Assertions.assertTrue(users.size()>=2);
     }
 
     @Test
-    private void findByLogin(){
+    public void findByLogin(){
         List<UserModel> users = userRepository.findAll();
         String login = users.get(0).getLogin();
         Optional<UserModel> user = userRepository.findByLogin(login);
@@ -37,7 +37,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    private void findByEmail(){
+    public void findByEmail(){
         List<UserModel> users = userRepository.findAll();
         String email = users.get(0).getEmail();
         Optional<UserModel> user = userRepository.findByEmail(email);

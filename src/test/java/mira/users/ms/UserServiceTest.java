@@ -36,7 +36,7 @@ public class UserServiceTest {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Test
-    private void newUserTest(){
+    public void newUserTest(){
 
         List<UserModel> users1 = userService.findAll();
 
@@ -61,7 +61,7 @@ public class UserServiceTest {
     }
 
     @Test
-    private void findAllTest(){
+    public void findAllTest(){
 
         List<UserModel> users1 = userService.findAll();
         Assertions.assertTrue(users1.size()>=2);
@@ -78,7 +78,7 @@ public class UserServiceTest {
     }
 
     @Test
-    private void findById(){
+    public void findById(){
 
         List<UserModel> users = userService.findAll();
         Long id = users.get(0).getId();
@@ -92,7 +92,7 @@ public class UserServiceTest {
     }
 
     @Test
-    private void saveUserTest(){
+    public void saveUserTest(){
 
 
         NewUserDto newUserDto = new NewUserDto();
@@ -127,7 +127,7 @@ public class UserServiceTest {
     }
 
     @Test
-    private void deleteUserTest(){
+    public void deleteUserTest(){
 
         List<UserModel> users1 = userService.findAll();
         Long id = users1.get(1).getId();
@@ -142,7 +142,7 @@ public class UserServiceTest {
     }
 
     @Test
-    private void setPasswordTest(){
+    public void setPasswordTest(){
 
         NewUserDto newUserDto = new NewUserDto();
         newUserDto.setEmail("setPassword@ee.ee");
@@ -167,7 +167,7 @@ public class UserServiceTest {
     }
 
     @Test
-    private void findByLoginTest(){
+    public void findByLoginTest(){
 
         NewUserDto newUserDto = new NewUserDto();
         newUserDto.setEmail("findByLogin@test.test");
@@ -185,7 +185,7 @@ public class UserServiceTest {
     }
 
     @Test
-    private void findByEmailTest(){
+    public void findByEmailTest(){
 
         NewUserDto newUserDto = new NewUserDto();
         newUserDto.setEmail("findByEmail@test.test");
@@ -203,7 +203,7 @@ public class UserServiceTest {
     }
 
     @Test
-    private void getUserDetailTest(){
+    public void getUserDetailTest(){
 
         NewUserDto newUserDto = new NewUserDto();
         newUserDto.setEmail("getUserDetail@test.test");
@@ -222,7 +222,7 @@ public class UserServiceTest {
 
 
     @Test
-    private void getAndSetUserRolesTest(){
+    public void getAndSetUserRolesTest(){
 
         NewUserDto newUserDto = new NewUserDto();
         newUserDto.setEmail("getUserRoles@test.test");
@@ -247,11 +247,10 @@ public class UserServiceTest {
                 .collect(Collectors.toSet());
         Assertions.assertIterableEquals(rolesBad, roleSet);
 
-
     }
 
     @Test
-    private void deleteAndAdUserRole(){
+    public void deleteAndAdUserRole(){
 
         NewUserDto newUserDto = new NewUserDto();
         newUserDto.setEmail("deleteAndAdUser@test.test");
@@ -294,7 +293,5 @@ public class UserServiceTest {
         Assertions.assertIterableEquals(roles, roleSet);
 
     }
-
-
 
 }

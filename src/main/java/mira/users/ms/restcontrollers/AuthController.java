@@ -3,6 +3,9 @@ package mira.users.ms.restcontrollers;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mira.users.ms.config.JwtTokenUtil;
@@ -38,6 +41,14 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("")
+    @ApiOperation(
+            value = "Авторизация",
+            notes = "Администратор - admin-100, Обычный пользователь - user-100. Возвращается токен"
+    )
+    @ApiImplicitParams(value={
+            @ApiImplicitParam(name="username", value = "admin", required = true),
+            @ApiImplicitParam(name="password", value = "100", required = true)
+    })
     public ResponseEntity<JwtResponseDTO> createAuthToken(@RequestBody JwtRequestDTO authRequest) {
         log.info("AuthController, createAuthToken, {}", authRequest.getUsername());
         try {
@@ -53,6 +64,10 @@ public class AuthController {
     }
 
     @PostMapping("/checkcredentials")
+    @ApiOperation(
+            value = "Проверка токена",
+            notes = "Если токен валиден, то возвращается список ролей"
+    )
     public ResponseEntity<CredentialsDto> checkToken(@RequestBody JwtResponseDTO token) {
 
         String username;

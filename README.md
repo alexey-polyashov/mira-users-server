@@ -10,6 +10,8 @@
 
 API сервиса доступно для просмотра через swagger - http://localhost:8080/mira-users/swagger-ui.html
 
+Есть опубликованный API - https://mira-user-service.herokuapp.com/swagger-ui.html
+
 # Для запуска как отдельного приложения
 
 1. Склонировать репозиторий к себе на компьютер
